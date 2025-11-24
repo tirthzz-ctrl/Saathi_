@@ -13,8 +13,9 @@ const COLORS = {
   teal: 'bg-teal-600',
 };
 
-// PASTE YOUR API KEY HERE
-const API_KEY = "AIzaSyCDQ_ym_YYmo7GHpHv9ArQd9IW5nnG8rVM"; 
+// API Key managed by the environment for security and stability
+// We stick to Gemini here as it's the supported model for this preview environment.
+const API_KEY = "AIzaSyAXgSeuDX0bixOpWUS_9xzzVVfWjb4Z7N4"; 
 
 const VIBES = [
   { id: 'foodie', label: 'Chattora (Foodie)', icon: <ChefHat size={18} /> },
@@ -154,10 +155,10 @@ const fetchGeminiBlueprint = async (formData) => {
       },
       "packing_list": ["Item 1 (Specific to weather/activity)", "Item 2", "Item 3", "Item 4", "Item 5"],
       "local_phrases": [
-        {"phrase": "Hello", "translation": "Local translation", "pronunciation": "Phonetic"},
-        {"phrase": "Thank you", "translation": "Local translation", "pronunciation": "Phonetic"},
-        {"phrase": "How much?", "translation": "Local translation", "pronunciation": "Phonetic"},
-        {"phrase": "No spicy", "translation": "Local translation", "pronunciation": "Phonetic"}
+        { "phrase": "Hello", "translation": "Local translation", "pronunciation": "Phonetic" },
+        { "phrase": "Thank you", "translation": "Local translation", "pronunciation": "Phonetic" },
+        { "phrase": "How much?", "translation": "Local translation", "pronunciation": "Phonetic" },
+        { "phrase": "No spicy", "translation": "Local translation", "pronunciation": "Phonetic" }
       ]
     }
   `;
@@ -169,11 +170,15 @@ const fetchGeminiBlueprint = async (formData) => {
       body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
     });
 
-    if (!response.ok) throw new Error("API Error");
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`API Error: ${errorData.error?.message || response.statusText}`);
+    }
+
     const data = await response.json();
     let textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
     
-    if (!textResponse) throw new Error("No AI response");
+    if (!textResponse) throw new Error("No AI response text found");
 
     // Improved cleaning logic for JSON
     textResponse = textResponse.trim();
@@ -211,7 +216,7 @@ const HomePage = ({ setStep }) => (
       Namaste, I am <span className="text-orange-600">Saathi</span>.
     </h1>
     <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
-      Your AI Travel Companion. <br/>
+      The world's most sophisticated AI Group Travel Concierge. <br/>
       I bring <span className="font-bold text-teal-700">Desi Heart</span> to <span className="font-bold text-teal-700">Global Smarts</span>.
     </p>
     <button 
@@ -334,8 +339,8 @@ const BillSplitter = ({ currency }) => {
         <Calculator size={18} /> Hisaab (Split Bill)
       </h4>
       <div className="flex gap-2 mb-2">
-        <input type="number" placeholder="Total Amount" className="w-1/2 p-2 border rounded bg-gray-50" value={amount} onChange={e => setAmount(e.target.value)} />
-        <input type="number" placeholder="People" className="w-1/2 p-2 border rounded bg-gray-50" value={people} onChange={e => setPeople(e.target.value)} />
+        <input type="number" placeholder="Total" className="w-1/2 p-2 border rounded bg-gray-50 focus:ring-2 focus:ring-teal-500 outline-none" value={amount} onChange={e => setAmount(e.target.value)} />
+        <input type="number" placeholder="People" className="w-1/2 p-2 border rounded bg-gray-50 focus:ring-2 focus:ring-teal-500 outline-none" value={people} onChange={e => setPeople(e.target.value)} />
       </div>
       <div className="text-right text-sm font-bold text-gray-700">
         Per Person: <span className="text-teal-600 text-lg">{currency}{result}</span>
@@ -346,7 +351,7 @@ const BillSplitter = ({ currency }) => {
 
 const BlueprintDisplay = ({ blueprint, formData, setStep }) => {
   
-  // --- FIXED SHARE FUNCTIONALITY ---
+  // --- SHARE FUNCTIONALITY ---
   const handleShare = async () => {
     const text = `Check out my ${formData.destination} trip plan by Saathi!\n\nSummary: ${blueprint.summary}`;
     
@@ -365,7 +370,7 @@ const BlueprintDisplay = ({ blueprint, formData, setStep }) => {
     }
   };
 
-  // --- FIXED DOWNLOAD FUNCTIONALITY ---
+  // --- DOWNLOAD FUNCTIONALITY ---
   const handleDownload = () => {
     // Create a formatted string of the itinerary
     const element = document.createElement("a");
@@ -385,7 +390,7 @@ ${blueprint.budget.tiers[0].name}: ${blueprint.budget.currency}${blueprint.budge
 ${blueprint.budget.tiers[1].name}: ${blueprint.budget.currency}${blueprint.budget.tiers[1].total}
 
 PACKING LIST
-- ${blueprint.packing_list.join('\n- ')}
+- ${blueprint.packing_list ? blueprint.packing_list.join('\n- ') : 'N/A'}
 
 Safe Travels! - Saathi AI
     `;
@@ -405,9 +410,8 @@ Safe Travels! - Saathi AI
         <div className="flex justify-between items-start">
           <button onClick={() => setStep('intake')} className="text-teal-100 text-sm hover:text-white underline mb-4 inline-block">&larr; Edit</button>
           <div className="flex gap-2">
-            {/* Fixed Buttons */}
-            <button onClick={handleShare} className="p-2 bg-white/20 rounded-full hover:bg-white/30 text-white"><Share2 size={18} /></button>
-            <button onClick={handleDownload} className="p-2 bg-white/20 rounded-full hover:bg-white/30 text-white"><Download size={18} /></button>
+            <button onClick={handleShare} className="p-2 bg-white/20 rounded-full hover:bg-white/30 text-white transition-colors" title="Share Summary"><Share2 size={18} /></button>
+            <button onClick={handleDownload} className="p-2 bg-white/20 rounded-full hover:bg-white/30 text-white transition-colors" title="Download Text"><Download size={18} /></button>
           </div>
         </div>
         <h2 className="text-3xl font-bold font-serif">Saathi Blueprint: {formData.destination}</h2>
@@ -483,9 +487,9 @@ Safe Travels! - Saathi AI
           <section className="bg-yellow-50 p-5 rounded-xl border border-yellow-200">
             <h3 className="flex items-center gap-2 text-lg font-bold text-yellow-800 mb-3"><CheckSquare size={18} /> Jhola (Packing)</h3>
             <ul className="space-y-2">
-              {blueprint.packing_list.map((item, i) => (
+              {blueprint.packing_list && blueprint.packing_list.map((item, i) => (
                 <li key={i} className="flex items-center gap-2 text-sm text-gray-700">
-                  <input type="checkbox" className="accent-orange-500" /> {item}
+                  <input type="checkbox" className="accent-orange-500 w-4 h-4" /> {item}
                 </li>
               ))}
             </ul>
@@ -494,7 +498,7 @@ Safe Travels! - Saathi AI
           <section className="bg-indigo-50 p-5 rounded-xl border border-indigo-200">
             <h3 className="flex items-center gap-2 text-lg font-bold text-indigo-800 mb-3"><MessageCircle size={18} /> Boli (Lingo)</h3>
             <div className="space-y-3">
-              {blueprint.local_phrases.map((p, i) => (
+              {blueprint.local_phrases && blueprint.local_phrases.map((p, i) => (
                 <div key={i} className="bg-white p-2 rounded border border-indigo-100">
                   <p className="font-bold text-sm text-gray-800">{p.phrase}</p>
                   <p className="text-xs text-indigo-600">{p.translation}</p>
