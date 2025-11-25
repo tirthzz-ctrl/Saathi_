@@ -1,7 +1,7 @@
-Saathi: AI-Powered Group Travel Concierge 🌍✈️
+# Saathi: AI-Powered Group Travel Concierge 🌍✈️
 Saathi (meaning "Companion" in Hindi) is a sophisticated, React-based travel planning application designed to create the perfect group travel blueprints. It balances diverse personalities, maximizes budgets with a "Desi" (local/smart) touch, and prioritizes safety without sacrificing authenticity.
 
-✨ Key Features
+# ✨ Key Features
 🤖 AI-Generated Blueprints: Uses Google's Gemini AI to craft detailed, day-by-day itineraries based on your group's vibe, budget, and constraints.
 
 💰 Smart Budgeting: Provides a realistic financial breakdown with two tiers:
